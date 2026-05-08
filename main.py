@@ -23,36 +23,72 @@ def get_video(url: str):
         # ignore playlists
         "noplaylist": True,
 
-        # suppress logs
-        "quiet": True
+        # cleaner logs
+        "quiet": True,
+
+        # behave like android client
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["android"]
+            }
+        },
+
+        # fake browser headers
+        "http_headers": {
+            "User-Agent":
+                "Mozilla/5.0"
+        }
     }
 
-    with YoutubeDL(ydl_opts) as ydl:
+    try:
 
-        info = ydl.extract_info(
-            url,
-            download=False
-        )
+        with YoutubeDL(ydl_opts) as ydl:
+
+            info = ydl.extract_info(
+                url,
+                download=False
+            )
+
+            return {
+
+                "success": True,
+
+                "title":
+                    info.get("title"),
+
+                "description":
+                    info.get("description"),
+
+                "thumbnail":
+                    info.get("thumbnail"),
+
+                "views":
+                    info.get("view_count"),
+
+                "likes":
+                    info.get("like_count"),
+
+                "channel":
+                    info.get("channel"),
+
+                "channel_url":
+                    info.get("channel_url"),
+
+                "duration":
+                    info.get("duration"),
+
+                "upload_date":
+                    info.get("upload_date"),
+
+                "video_url":
+                    info.get("url")
+            }
+
+    except Exception as e:
 
         return {
 
-            "title": info.get("title"),
+            "success": False,
 
-            "description": info.get("description"),
-
-            "thumbnail": info.get("thumbnail"),
-
-            "views": info.get("view_count"),
-
-            "likes": info.get("like_count"),
-
-            "channel": info.get("channel"),
-
-            "channel_url": info.get("channel_url"),
-
-            "duration": info.get("duration"),
-
-            "upload_date": info.get("upload_date"),
-
-            "video_url": info.get("url")
+            "error": str(e)
         }
